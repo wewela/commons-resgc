@@ -1,4 +1,4 @@
-Copyright (c) 2010-2014, Gang Wang
+Copyright (c) 2010-2014, Gang Wang 
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

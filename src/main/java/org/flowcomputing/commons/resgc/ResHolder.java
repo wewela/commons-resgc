@@ -10,7 +10,7 @@ import java.lang.ref.Reference;
  * @param <T>
  *            a resource type for its holder
  */
-class ResHolder<T> implements Holder<T> {
+public class ResHolder<T> implements Holder<T> {
 
 	protected Reference<? extends Holder<T>> m_refer;
 	protected ResCollector<? extends Holder<T>, T>.ResDestroy m_resdestroyer;

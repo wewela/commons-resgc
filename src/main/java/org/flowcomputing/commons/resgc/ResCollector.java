@@ -20,24 +20,6 @@ import java.util.HashMap;
  * @param <MRES>
  *            resource type to be holden.
  */
-/**
- * @author wg
- *
- * @param <HOLDER>
- * @param <MRES>
- */
-/**
- * @author wg
- *
- * @param <HOLDER>
- * @param <MRES>
- */
-/**
- * @author wg
- *
- * @param <HOLDER>
- * @param <MRES>
- */
 public class ResCollector<HOLDER extends Holder<MRES>, MRES> implements
 		Collector<HOLDER, MRES> {
 

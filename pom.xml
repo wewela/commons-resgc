@@ -41,7 +41,7 @@
 
 	<scm>
 		<connection>scm:git:https://wewela@github.com/wewela/commons-resgc.git</connection>
-		<developerConnection>scm:git:https://wewela@github.com:wewela/commons-resgc.git</developerConnection>
+		<developerConnection>scm:git:https://wewela@github.com/wewela/commons-resgc.git</developerConnection>
 		<url>https://github.com/wewela/commons-resgc</url>
 		<tag>commons-resgc-0.7.2</tag>
 	</scm>

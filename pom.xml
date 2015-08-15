@@ -40,8 +40,8 @@
 	</licenses>
 
 	<scm>
-		<connection>scm:git:https//github.com/wewela/commons-resgc.git</connection>
-		<developerConnection>scm:git:git@github.com:wewela/commons-resgc.git</developerConnection>
+		<connection>scm:git:https://wewela@github.com/wewela/commons-resgc.git</connection>
+		<developerConnection>scm:git:https://wewela@github.com:wewela/commons-resgc.git</developerConnection>
 		<url>https://github.com/wewela/commons-resgc</url>
 		<tag>HEAD</tag>
 	</scm>

@@ -18,9 +18,15 @@ public interface Collector<HOLDER extends Holder<MRES>, MRES> {
 	 * 
 	 * @param holder
 	 *            a holder to be registered
-	 * @param mres
-	 *            a resource has been holden
 	 */
-	public void register(HOLDER holder, MRES mres);
+	public void register(HOLDER holder);
+
+	/**
+	 * Unregister a bound resource.
+	 * 
+	 * @param holder
+	 *            a holder to be registered
+	 */
+	public void unregister(HOLDER holder);
 
 }

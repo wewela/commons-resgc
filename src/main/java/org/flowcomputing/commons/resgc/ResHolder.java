@@ -20,6 +20,7 @@ public class ResHolder<T> implements Holder<T> {
 	 * constructor to accept its resource.
 	 * 
 	 * @param mres
+	 *          a resource to be managed
 	 */
 	public ResHolder(T mres) {
 		m_mres = mres;
@@ -32,6 +33,13 @@ public class ResHolder<T> implements Holder<T> {
 	public void registerDestroyer(
 			ResCollector<? extends Holder<T>, T>.ResDestroy rd) {
 		m_resdestroyer = rd;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.flowcomputing.commons.resgc.Holder#clearDestroyer()
+	 */
+	public void clearDestroyer() {
+		m_resdestroyer = null;
 	}
 
 	/* (non-Javadoc)

@@ -1,10 +1,9 @@
 package org.flowcomputing.commons.resgc;
 
-import static org.testng.AssertJUnit.*;
+import org.testng.annotations.Test;
+import org.testng.AssertJUnit;
 
 import java.util.Random;
-
-import org.testng.annotations.Test;
 
 /**
  * ResCollectorTest is a test class which contains several test cases for the
@@ -49,10 +48,14 @@ public class ResCollectorTest {
 
 		for (int i = 0; i < 100; i++) {
 			Double val = new Double(random.nextDouble() * 2000);
-			rc.register(new DoubleHolder(val), val);
+			DoubleHolder holder = new DoubleHolder(val);
+			rc.register(holder);
+			if (2 == i) {
+				rc.unregister(holder);
+			}
 			count++;
 		}
-		assertTrue(count > 0);
+		AssertJUnit.assertTrue(count > 0);
 
 		System.gc();
 		try {
@@ -60,7 +63,7 @@ public class ResCollectorTest {
 		} catch (InterruptedException e) {
 		}
 
-		assertTrue(count == 0);
+		AssertJUnit.assertTrue(count == 1);
 
 	}
 
@@ -91,12 +94,12 @@ public class ResCollectorTest {
 		for (int i = 0; i < 100; i++) {
 			Double val = new Double(random.nextDouble() * 2000);
 			DoubleHolder dh = new DoubleHolder(val);
-			rc.register(dh, val);
+			rc.register(dh);
 			count++;
 			dh.destroy();
 		}
 
-		assertTrue(count == 0);
+		AssertJUnit.assertTrue(count == 0);
 
 	}
 }

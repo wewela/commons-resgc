@@ -52,6 +52,7 @@ public class ResCollector<HOLDER extends Holder<MRES>, MRES> implements
 
 	private final ReferenceQueue<HOLDER> refque = new ReferenceQueue<HOLDER>();
 	private final Map<Reference<? extends Holder<MRES>>, MRES> refmap = new HashMap<Reference<? extends Holder<MRES>>, MRES>();
+	private final Map<MRES, Reference<? extends Holder<MRES>>> resmap = new HashMap<MRES, Reference<? extends Holder<MRES>>>();
 
 	private ResReclaim<MRES> m_reclaimer;
 	private Thread m_collector;
@@ -60,7 +61,8 @@ public class ResCollector<HOLDER extends Holder<MRES>, MRES> implements
 	 * constructor to accept a resource reclaimer that is used to actual its
 	 * resource when needed.
 	 * 
-	 * @param reclaimer
+	 * @param reclaimer 
+	 *          a reclaimer object for managed resource reclaim.
 	 */
 	public ResCollector(ResReclaim<MRES> reclaimer) {
 		m_reclaimer = reclaimer;
@@ -71,6 +73,7 @@ public class ResCollector<HOLDER extends Holder<MRES>, MRES> implements
 						Reference<? extends HOLDER> ref = refque.remove();
 						MRES mres = refmap.remove(ref);
 						if (null != mres) {
+							resmap.remove(mres);
 							m_reclaimer.reclaim(mres);
 						}
 					} catch (InterruptedException ex) {
@@ -91,11 +94,29 @@ public class ResCollector<HOLDER extends Holder<MRES>, MRES> implements
 	 * commons.resgc.Holder, java.lang.Object)
 	 */
 	@Override
-	public void register(HOLDER holder, MRES mres) {
+	public void register(HOLDER holder) {
 		PhantomReference<HOLDER> pref = new PhantomReference<HOLDER>(holder,
 				refque);
-		refmap.put(pref, mres);
+		refmap.put(pref, holder.get());
+		resmap.put(holder.get(), pref);
 		holder.registerDestroyer(new ResDestroy(pref));
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.flowcomputing.commons.resgc.Collector#unregister(org.flowcomputing.
+	 * commons.resgc.Holder, java.lang.Object)
+	 */
+	@Override
+	public void unregister(HOLDER holder) {
+		Reference<? extends Holder<MRES>> ref = resmap.remove(holder.get());
+		if (null != ref) {
+			refmap.remove(ref);
+			holder.clearDestroyer();
+		}
+		holder.clearDestroyer();
 	}
 
 	/**
@@ -107,6 +128,7 @@ public class ResCollector<HOLDER extends Holder<MRES>, MRES> implements
 	private void destroyHoldRes(Reference<HOLDER> ref) {
 		MRES mres = refmap.remove(ref);
 		if (null != mres) {
+			resmap.remove(mres);
 			m_reclaimer.reclaim(mres);
 		}
 	}

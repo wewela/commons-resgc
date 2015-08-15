@@ -19,6 +19,11 @@ public interface Holder<T> {
 	 */
 	public void registerDestroyer(
 			ResCollector<? extends Holder<T>, T>.ResDestroy rd);
+	
+	/**
+	 * clear destroyer.
+	 */ 
+	public void clearDestroyer();
 
 	/**
 	 * get its holden resource. Note that it should not be used for assignment.

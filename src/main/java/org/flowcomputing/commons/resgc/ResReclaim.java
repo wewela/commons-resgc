@@ -6,7 +6,7 @@ package org.flowcomputing.commons.resgc;
  * 
  * @author wg
  *
- * @param <MRES>
+ * @param <MRES> the type of a resource
  */
 public interface ResReclaim<MRES> {
 

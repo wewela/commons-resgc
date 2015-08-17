@@ -114,7 +114,6 @@ public class ResCollector<HOLDER extends Holder<MRES>, MRES> implements
 		Reference<? extends Holder<MRES>> ref = resmap.remove(holder.get());
 		if (null != ref) {
 			refmap.remove(ref);
-			holder.clearDestroyer();
 		}
 		holder.clearDestroyer();
 	}

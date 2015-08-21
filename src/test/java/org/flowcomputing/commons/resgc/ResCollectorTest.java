@@ -13,7 +13,7 @@ import java.util.Random;
  *
  */
 public class ResCollectorTest {
-	public class DoubleHolder extends ResHolder<Double> {
+	public class DoubleHolder extends ResHolder<Double, DoubleHolder> {
 
 		public DoubleHolder(Double val) {
 			super(val);
@@ -46,12 +46,15 @@ public class ResCollectorTest {
 		ResCollector<DoubleHolder, Double> rc = new ResCollector<DoubleHolder, Double>(
 				rr);
 
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 500; ++i) {
 			Double val = new Double(random.nextDouble() * 2000);
 			DoubleHolder holder = new DoubleHolder(val);
 			rc.register(holder);
 			if (2 == i) {
 				rc.unregister(holder);
+			}
+			if (6 == i) {
+				holder.cancelReclaim();
 			}
 			count++;
 		}
@@ -63,7 +66,7 @@ public class ResCollectorTest {
 		} catch (InterruptedException e) {
 		}
 
-		AssertJUnit.assertTrue(count == 1);
+		AssertJUnit.assertTrue(count == 2);
 
 	}
 
@@ -91,11 +94,11 @@ public class ResCollectorTest {
 		ResCollector<DoubleHolder, Double> rc = new ResCollector<DoubleHolder, Double>(
 				rr);
 
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 100; ++i) {
 			Double val = new Double(random.nextDouble() * 2000);
 			DoubleHolder dh = new DoubleHolder(val);
 			rc.register(dh);
-			count++;
+			++count;
 			dh.destroy();
 		}
 

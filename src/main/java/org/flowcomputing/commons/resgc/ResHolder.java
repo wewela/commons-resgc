@@ -10,11 +10,11 @@ import java.lang.ref.Reference;
  * @param <T>
  *            a resource type for its holder
  */
-public class ResHolder<T> implements Holder<T> {
+public class ResHolder<T, H extends ResHolder<T, H>> implements Holder<T, H> {
 
-	protected Reference<? extends Holder<T>> m_refer;
-	protected ResCollector<? extends Holder<T>, T>.ResDestroy m_resdestroyer;
+	protected Collector<H, T> m_collector;
 	protected T m_mres;
+	protected Reference<H> m_refid;
 
 	/**
 	 * constructor to accept its resource.
@@ -25,23 +25,7 @@ public class ResHolder<T> implements Holder<T> {
 	public ResHolder(T mres) {
 		m_mres = mres;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.flowcomputing.commons.resgc.Holder#registerDestroyer(org.flowcomputing.commons.resgc.ResCollector.ResDestroy)
-	 */
-	@Override
-	public void registerDestroyer(
-			ResCollector<? extends Holder<T>, T>.ResDestroy rd) {
-		m_resdestroyer = rd;
-	}
 	
-	/* (non-Javadoc)
-	 * @see org.flowcomputing.commons.resgc.Holder#clearDestroyer()
-	 */
-	public void clearDestroyer() {
-		m_resdestroyer = null;
-	}
-
 	/* (non-Javadoc)
 	 * @see org.flowcomputing.commons.resgc.Holder#get()
 	 */
@@ -57,14 +41,51 @@ public class ResHolder<T> implements Holder<T> {
 	public void set(T mres) {
 		m_mres = mres;
 	}
+	
+	
+	/* (non-Javadoc)
+	 * @see org.flowcomputing.commons.resgc.Holder#setCollector(java.lang.Object)
+	 */
+	@Override
+	public void setCollector(Collector<H, T> collector) {
+		m_collector = collector;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.flowcomputing.commons.resgc.Holder#setRefId(java.lang.Object)
+	 */
+	@Override
+	public void setRefId(Reference<H> rid) {
+		m_refid = rid;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.flowcomputing.commons.resgc.Holder#getRefId()
+	 */
+	@Override
+	public Reference<H> getRefId() {
+		return m_refid;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.flowcomputing.commons.resgc.Holder#cancelReclaim()
+	 */
+	@Override
+	public void cancelReclaim() {
+		m_collector.unregister(m_refid);
+		m_collector = null;
+		m_refid = null;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.flowcomputing.commons.resgc.Holder#destroy()
 	 */
 	@Override
 	public void destroy() {
-		m_resdestroyer.destroy();
+		m_collector.destroyRes(m_refid);
+		m_collector = null;
 		m_mres = null;
+		m_refid = null;
 	}
-
+	
 }

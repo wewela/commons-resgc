@@ -1,5 +1,7 @@
 package org.flowcomputing.commons.resgc;
 
+import java.lang.ref.Reference;
+
 /**
  * A interface that defines a holder. it is used to hold any kind of resource
  * and provide way to access its holden resource. In addition, it should allow
@@ -9,22 +11,8 @@ package org.flowcomputing.commons.resgc;
  *
  * @param <T> a resource type for its holder 
  */
-public interface Holder<T> {
-
-	/**
-	 * Register a destroyer to destroy its holden resource.
-	 * 
-	 * @param rd
-	 *            a destroyer
-	 */
-	public void registerDestroyer(
-			ResCollector<? extends Holder<T>, T>.ResDestroy rd);
+public interface Holder<T, H extends Holder<T, H>> {
 	
-	/**
-	 * clear destroyer.
-	 */ 
-	public void clearDestroyer();
-
 	/**
 	 * get its holden resource. Note that it should not be used for assignment.
 	 * 
@@ -39,10 +27,40 @@ public interface Holder<T> {
 	 *            the holder will be set to a specified resource.
 	 */
 	public void set(T mres);
+		
+	/**
+	 * set collector.
+	 * 
+	 * @param collector
+	 *            the collector to manage this holder.
+	 */
+	public void setCollector(Collector<H, T> collector);
+	
+	/**
+	 * set reference id.
+	 * 
+	 * @param rid
+	 *            the reference id to be managed.
+	 */
+	public void setRefId(Reference<H> rid);
+	
+	/**
+	 * get its managed reference id.
+	 * 
+	 * @return its managed reference id
+	 */
+	public Reference<H> getRefId();
 
+	/**
+	 * prevent resource from being reclaimed.
+	 * 
+	 */
+	public void cancelReclaim();
+	
 	/**
 	 * destroy its holden resource and unregister from its collector.
 	 * 
 	 */
 	public void destroy();
+		
 }

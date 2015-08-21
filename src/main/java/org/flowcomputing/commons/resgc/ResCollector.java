@@ -122,6 +122,7 @@ public class ResCollector<HOLDER extends Holder<MRES, HOLDER>, MRES> implements
 	@Override
 	public void close() {
 		m_stopped = true;
+		refmap.clear();
 	}
 
 }

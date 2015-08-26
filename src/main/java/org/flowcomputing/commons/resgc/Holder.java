@@ -25,6 +25,9 @@ public interface Holder<T, H extends Holder<T, H>> {
 	 * 
 	 * @param mres
 	 *            the holder will be set to a specified resource.
+	 *
+	 * Note: must unregister this holder before changing its managed 
+	 *       resource.
 	 */
 	public void set(T mres);
 		

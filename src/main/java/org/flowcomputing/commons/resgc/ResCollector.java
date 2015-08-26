@@ -112,7 +112,6 @@ public class ResCollector<HOLDER extends Holder<MRES, HOLDER>, MRES> implements
 		}
 	}
 	
-	
 	/*
 	 * (non-Javadoc)
 	 * 

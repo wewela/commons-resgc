@@ -72,7 +72,9 @@ public class ResHolder<T, H extends ResHolder<T, H>> implements Holder<T, H> {
 	 */
 	@Override
 	public void cancelReclaim() {
-		m_collector.unregister(m_refid);
+		if (null != m_refid && null != m_collector) {
+			m_collector.unregister(m_refid);
+		}
 		m_collector = null;
 		m_refid = null;
 	}
@@ -82,7 +84,13 @@ public class ResHolder<T, H extends ResHolder<T, H>> implements Holder<T, H> {
 	 */
 	@Override
 	public void destroy() {
-		m_collector.destroyRes(m_refid);
+		if (null != m_refid && null != m_collector) {
+			if (null != m_mres) {
+				m_collector.destroyRes(m_refid);
+			} else {
+				m_collector.unregister(m_refid);
+			}
+		}
 		m_collector = null;
 		m_mres = null;
 		m_refid = null;

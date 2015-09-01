@@ -71,11 +71,10 @@ public class ResHolder<T, H extends ResHolder<T, H>> implements Holder<T, H> {
 	 * @see org.flowcomputing.commons.resgc.Holder#cancelReclaim()
 	 */
 	@Override
-	public void cancelReclaim() {
+	public void cancelAutoReclaim() {
 		if (null != m_refid && null != m_collector) {
 			m_collector.unregister(m_refid);
 		}
-		m_collector = null;
 		m_refid = null;
 	}
 
@@ -91,7 +90,6 @@ public class ResHolder<T, H extends ResHolder<T, H>> implements Holder<T, H> {
 				m_collector.unregister(m_refid);
 			}
 		}
-		m_collector = null;
 		m_mres = null;
 		m_refid = null;
 	}

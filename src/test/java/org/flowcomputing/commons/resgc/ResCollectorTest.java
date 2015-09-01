@@ -54,7 +54,7 @@ public class ResCollectorTest {
 				rc.unregister(holder);
 			}
 			if (6 == i) {
-				holder.cancelReclaim();
+				holder.cancelAutoReclaim();
 			}
 			count++;
 		}

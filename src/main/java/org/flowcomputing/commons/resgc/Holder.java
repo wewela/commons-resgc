@@ -58,7 +58,7 @@ public interface Holder<T, H extends Holder<T, H>> {
 	 * prevent resource from being reclaimed.
 	 * 
 	 */
-	public void cancelReclaim();
+	public void cancelAutoReclaim();
 	
 	/**
 	 * destroy its holden resource and unregister from its collector.

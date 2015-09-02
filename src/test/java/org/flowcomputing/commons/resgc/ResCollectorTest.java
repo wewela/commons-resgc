@@ -20,7 +20,7 @@ public class ResCollectorTest {
 		}
 	}
 
-	private int count;
+	private volatile int count;
 
 	/**
 	 * Test a register function of collector to verify collector is able to

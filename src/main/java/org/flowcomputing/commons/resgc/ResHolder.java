@@ -14,7 +14,16 @@ public class ResHolder<T, H extends ResHolder<T, H>> implements Holder<T, H> {
 
 	protected Collector<H, T> m_collector;
 	protected T m_mres;
+	protected volatile boolean m_hasres = false;
 	protected Reference<H> m_refid;
+
+	/**
+	 * default constructor.
+	 *
+	 */
+	public ResHolder() {
+		m_hasres = false;
+	}
 
 	/**
 	 * constructor to accept its resource.
@@ -24,8 +33,9 @@ public class ResHolder<T, H extends ResHolder<T, H>> implements Holder<T, H> {
 	 */
 	public ResHolder(T mres) {
 		m_mres = mres;
+		m_hasres = true;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.flowcomputing.commons.resgc.Holder#get()
 	 */
@@ -40,8 +50,24 @@ public class ResHolder<T, H extends ResHolder<T, H>> implements Holder<T, H> {
 	@Override
 	public void set(T mres) {
 		m_mres = mres;
+		m_hasres = true;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.flowcomputing.commons.resgc.Holder#clear()
+	 */
+	@Override
+	public void clear() {
+		m_hasres = false;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.flowcomputing.commons.resgc.Holder#hasResource()
+	 */
+	@Override
+	public boolean hasResource() {
+		return m_hasres;
+	}
 	
 	/* (non-Javadoc)
 	 * @see org.flowcomputing.commons.resgc.Holder#setCollector(java.lang.Object)
@@ -74,8 +100,8 @@ public class ResHolder<T, H extends ResHolder<T, H>> implements Holder<T, H> {
 	public void cancelAutoReclaim() {
 		if (null != m_refid && null != m_collector) {
 			m_collector.unregister(m_refid);
+			m_refid = null;
 		}
-		m_refid = null;
 	}
 
 	/* (non-Javadoc)
@@ -83,15 +109,16 @@ public class ResHolder<T, H extends ResHolder<T, H>> implements Holder<T, H> {
 	 */
 	@Override
 	public void destroy() {
-		if (null != m_refid && null != m_collector) {
-			if (null != m_mres) {
-				m_collector.destroyRes(m_refid);
-			} else {
+		if (null != m_collector) {
+			if (null != m_refid) {
 				m_collector.unregister(m_refid);
+				m_refid = null;
+			}
+			if (hasResource()) {
+				m_collector.destroyRes(m_mres);
+				m_hasres = false;
 			}
 		}
-		m_mres = null;
-		m_refid = null;
 	}
-	
+
 }

@@ -107,11 +107,14 @@ public class ResCollector<HOLDER extends Holder<MRES, HOLDER>, MRES> implements
 	@Override
 	public void destroyRes(Reference<? extends HOLDER> ref) {
 		MRES mres = refmap.remove(ref);
-		if (null != mres) {
-			m_reclaimer.reclaim(mres);
-		}
+		m_reclaimer.reclaim(mres);
 	}
-	
+
+	@Override
+	public void destroyRes(MRES mres) {
+		m_reclaimer.reclaim(mres);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 

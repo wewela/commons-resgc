@@ -49,6 +49,14 @@ public interface Collector<HOLDER extends Holder<MRES, HOLDER>, MRES> {
 	public void destroyRes(Reference<? extends HOLDER> ref);
 	
 	/**
+	 * destroy the resource
+	 *
+	 * @param mres
+	 * 			  a resource to be destroyed
+	 */
+	public void destroyRes(MRES mres);
+
+	/**
 	 * close this collector.
 	 */
 	public void close();

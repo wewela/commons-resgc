@@ -30,6 +30,18 @@ public interface Holder<T, H extends Holder<T, H>> {
 	 *       resource.
 	 */
 	public void set(T mres);
+
+	/**
+	 * clear its managed resource
+	 */
+	public void clear();
+
+	/**
+	 * return whether it has managed resource
+	 *
+	 * @return if hold its managed resource
+	 */
+	public boolean hasResource();
 		
 	/**
 	 * set collector.

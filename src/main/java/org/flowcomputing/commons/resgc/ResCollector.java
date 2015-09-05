@@ -4,7 +4,7 @@ import java.lang.ref.ReferenceQueue;
 import java.lang.ref.PhantomReference;
 import java.lang.ref.Reference;
 import java.util.Map;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Collect resource holders that need to be collected after utilization. It
@@ -25,7 +25,7 @@ public class ResCollector<HOLDER extends Holder<MRES, HOLDER>, MRES> implements
 
 	private final ReferenceQueue<HOLDER> refque = new ReferenceQueue<HOLDER>();
 	private final Map<Reference<HOLDER>, MRES> refmap = 
-			new HashMap<Reference<HOLDER>, MRES>();
+			new ConcurrentHashMap<Reference<HOLDER>, MRES>();
 
 	private ResReclaim<MRES> m_reclaimer;
 	private Thread m_collector;

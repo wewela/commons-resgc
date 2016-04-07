@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.flowcomputing.commons</groupId>
 	<artifactId>commons-resgc</artifactId>
-	<version>0.8.8-SNAPSHOT</version>
+	<version>0.8.9-SNAPSHOT</version>
 
 	<name>Flowcomputing Resource Collector</name>
 	<description>Collect resources</description>

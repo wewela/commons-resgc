@@ -128,6 +128,9 @@ public class ResCollector<HOLDER extends Holder<MRES, HOLDER>, MRES> implements
 		}
 	}
 
+	/**
+	 * wait for reclaim termination.
+	 */
 	public void waitReclaimCoolDown() {
 		do {
 			forceGC(WAITRECLAIMTIMEOUT);

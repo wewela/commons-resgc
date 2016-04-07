@@ -130,10 +130,13 @@ public class ResCollector<HOLDER extends Holder<MRES, HOLDER>, MRES> implements
 
 	/**
 	 * wait for reclaim termination.
+	 *
+	 * @param timeout
+	 *            specify a timeout to reclaim
 	 */
-	public void waitReclaimCoolDown() {
+	public void waitReclaimCoolDown(long timeout) {
 		do {
-			forceGC(WAITRECLAIMTIMEOUT);
+			forceGC(timeout);
 		} while (0L != descnt.getAndSet(0L));
 	}
 
@@ -145,7 +148,7 @@ public class ResCollector<HOLDER extends Holder<MRES, HOLDER>, MRES> implements
 	 */
 	@Override
 	public void close() {
-		waitReclaimCoolDown();
+		waitReclaimCoolDown(WAITRECLAIMTIMEOUT);
 		m_stopped = true;
 		refmap.clear();
 	}

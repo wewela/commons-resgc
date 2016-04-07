@@ -5,6 +5,7 @@ import java.lang.ref.PhantomReference;
 import java.lang.ref.Reference;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Collect resource holders that need to be collected after utilization. It
@@ -23,12 +24,15 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ResCollector<HOLDER extends Holder<MRES, HOLDER>, MRES> implements
 		Collector<HOLDER, MRES> {
 
+	public final static long WAITRECLAIMTIMEOUT = 2000;
+
 	private final ReferenceQueue<HOLDER> refque = new ReferenceQueue<HOLDER>();
 	private final Map<Reference<HOLDER>, MRES> refmap = 
 			new ConcurrentHashMap<Reference<HOLDER>, MRES>();
 
 	private ResReclaim<MRES> m_reclaimer;
 	private Thread m_collector;
+	private AtomicLong descnt = new AtomicLong(0L);
 	
 	private volatile boolean m_stopped = false;
 
@@ -47,6 +51,7 @@ public class ResCollector<HOLDER extends Holder<MRES, HOLDER>, MRES> implements
 					try {
 						Reference<? extends HOLDER> ref = refque.remove();
 						destroyRes(ref);
+						descnt.getAndIncrement();
 					} catch (InterruptedException ex) {
 						break;
 					}
@@ -115,6 +120,20 @@ public class ResCollector<HOLDER extends Holder<MRES, HOLDER>, MRES> implements
 		m_reclaimer.reclaim(mres);
 	}
 
+	private void forceGC(long timeout) {
+		System.gc();
+		try {
+			Thread.sleep(timeout);
+		} catch (Exception ex) {
+		}
+	}
+
+	public void waitReclaimCoolDown() {
+		do {
+			forceGC(WAITRECLAIMTIMEOUT);
+		} while (0L != descnt.getAndSet(0L));
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -123,6 +142,7 @@ public class ResCollector<HOLDER extends Holder<MRES, HOLDER>, MRES> implements
 	 */
 	@Override
 	public void close() {
+		waitReclaimCoolDown();
 		m_stopped = true;
 		refmap.clear();
 	}

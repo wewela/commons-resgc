@@ -152,11 +152,11 @@ public class ResCollector<HOLDER extends Holder<MRES, HOLDER>, MRES> implements
 	 * org.flowcomputing.commons.resgc.Collector#close()
 	 */
 	@Override
-	public boolean close() {
+	public boolean close(long recltmout, long termtmout) {
 		boolean ret = true;
-		waitReclaimCoolDown(WAITRECLAIMTIMEOUT);
+		waitReclaimCoolDown(recltmout);
 		m_stopped = true;
-		long et = System.currentTimeMillis() + WAITTERMTIMEOUT;
+		long et = System.currentTimeMillis() + termtmout;
 		while (m_collector.getState() != Thread.State.TERMINATED) {
 			try {
 				Thread.sleep(TERMCHECKTIMEOUT);
@@ -171,4 +171,7 @@ public class ResCollector<HOLDER extends Holder<MRES, HOLDER>, MRES> implements
 		return ret;
 	}
 
+	public boolean close() {
+		return close(WAITRECLAIMTIMEOUT, WAITTERMTIMEOUT);
+	}
 }

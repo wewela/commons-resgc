@@ -59,8 +59,14 @@ public interface Collector<HOLDER extends Holder<MRES, HOLDER>, MRES> {
 	/**
 	 * close this collector.
 	 *
+	 * @param recltmout
+	 *            specify a timeout for reclaiming
+	 *
+	 * @param termtmout
+	 *            specify a timeout for terminating worker thread
+	 *
 	 * @return true if closed gracefully otherwise timeout.
 	 */
-	public boolean close();
+	public boolean close(long recltmout, long termtmout);
 
 }

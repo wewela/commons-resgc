@@ -58,7 +58,9 @@ public interface Collector<HOLDER extends Holder<MRES, HOLDER>, MRES> {
 
 	/**
 	 * close this collector.
+	 *
+	 * @return true if closed gracefully otherwise timeout.
 	 */
-	public void close();
+	public boolean close();
 
 }

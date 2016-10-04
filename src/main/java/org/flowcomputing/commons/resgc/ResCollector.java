@@ -24,7 +24,10 @@ import java.util.concurrent.atomic.AtomicLong;
 public class ResCollector<HOLDER extends Holder<MRES, HOLDER>, MRES> implements
 		Collector<HOLDER, MRES> {
 
-	public final static long WAITRECLAIMTIMEOUT = 2000;
+	public final static long WAITRECLAIMTIMEOUT = 800;
+	public final static long WAITQUEUETIMEOUT = 300;
+        public final static long WAITTERMTIMEOUT = 10000;
+	public final static long TERMCHECKTIMEOUT = 20;
 
 	private final ReferenceQueue<HOLDER> refque = new ReferenceQueue<HOLDER>();
 	private final Map<Reference<HOLDER>, MRES> refmap = 
@@ -49,9 +52,11 @@ public class ResCollector<HOLDER extends Holder<MRES, HOLDER>, MRES> implements
 			public void run() {
 				while (!m_stopped) {
 					try {
-						Reference<? extends HOLDER> ref = refque.remove();
-						destroyRes(ref);
-						descnt.getAndIncrement();
+						Reference<? extends HOLDER> ref = refque.remove(WAITQUEUETIMEOUT);
+                                                if (null != ref) {
+							destroyRes(ref);
+							descnt.getAndIncrement();
+						}
 					} catch (InterruptedException ex) {
 						break;
 					}
@@ -147,10 +152,23 @@ public class ResCollector<HOLDER extends Holder<MRES, HOLDER>, MRES> implements
 	 * org.flowcomputing.commons.resgc.Collector#close()
 	 */
 	@Override
-	public void close() {
+	public boolean close() {
+		boolean ret = true;
 		waitReclaimCoolDown(WAITRECLAIMTIMEOUT);
 		m_stopped = true;
+		long et = System.currentTimeMillis() + WAITTERMTIMEOUT;
+		while (m_collector.getState() != Thread.State.TERMINATED) {
+			try {
+				Thread.sleep(TERMCHECKTIMEOUT);
+			} catch (Exception ex) {
+			}
+			if (System.currentTimeMillis() > et) {
+				ret = false;
+				break;
+			}
+		}
 		refmap.clear();
+		return ret;
 	}
 
 }

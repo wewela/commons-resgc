@@ -46,6 +46,7 @@ public class ResCollectorTest {
 		ResCollector<DoubleHolder, Double> rc = new ResCollector<DoubleHolder, Double>(
 				rr);
 
+		DoubleHolder m_holder = null;
 		for (int i = 0; i < 500; ++i) {
 			Double val = new Double(random.nextDouble() * 2000);
 			DoubleHolder holder = new DoubleHolder(val);
@@ -56,17 +57,17 @@ public class ResCollectorTest {
 			if (6 == i) {
 				holder.cancelAutoReclaim();
 			}
+			if (9 == i) {
+				m_holder = holder;
+			}
 			count++;
 		}
 		AssertJUnit.assertTrue(count > 0);
 
-		System.gc();
-		try {
-			Thread.sleep(500);
-		} catch (InterruptedException e) {
-		}
+		rc.waitReclaimCoolDown(rc.WAITRECLAIMTIMEOUT);
 
-		AssertJUnit.assertTrue(count == 2);
+		AssertJUnit.assertTrue(count == 3);
+		System.out.println(String.format("********** %f has been hold ***********", m_holder.get()));
 
 	}
 

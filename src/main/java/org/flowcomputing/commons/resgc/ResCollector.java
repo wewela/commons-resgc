@@ -76,11 +76,13 @@ public class ResCollector<HOLDER extends Holder<MRES, HOLDER>, MRES> implements
 	 */
 	@Override
 	public void register(HOLDER holder) {
-		PhantomReference<HOLDER> pref = new PhantomReference<HOLDER>(holder,
-				refque);
-		refmap.put(pref, holder.get());
-		holder.setCollector(this);
-		holder.setRefId(pref);
+		if (null == holder.getRefId()) {
+			PhantomReference<HOLDER> pref = new PhantomReference<HOLDER>(holder,
+					refque);
+			refmap.put(pref, holder.get());
+			holder.setCollector(this);
+			holder.setRefId(pref);
+		}
 	}
 	
 	/*
@@ -92,9 +94,11 @@ public class ResCollector<HOLDER extends Holder<MRES, HOLDER>, MRES> implements
 	 */
 	@Override
 	public void unregister(HOLDER holder) {
-		refmap.remove(holder.getRefId());
-		holder.setRefId(null);
-		holder.setCollector(null);
+		if (null != holder.getRefId()) {
+			refmap.remove(holder.getRefId());
+			holder.setRefId(null);
+			holder.setCollector(null);
+		}
 	}
 	
 	/*

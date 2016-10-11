@@ -33,12 +33,12 @@ public interface Collector<HOLDER extends Holder<MRES, HOLDER>, MRES> {
 	
 	
 	/**
-	 * Unregister a managed resource.
+	 * Remove a Ref that cannot be used alone.
 	 * 
 	 * @param ref
-	 *            a referred resource to be unregistered
+	 *            a reference object to be removed
 	 */
-	public void unregister(Reference<HOLDER> ref);
+	public void removeRef(Reference<HOLDER> ref);
 	
 	/**
 	 * destroy its managed resource

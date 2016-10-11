@@ -99,7 +99,7 @@ public class ResHolder<T, H extends ResHolder<T, H>> implements Holder<T, H> {
 	@Override
 	public void cancelAutoReclaim() {
 		if (null != m_refid && null != m_collector) {
-			m_collector.unregister(m_refid);
+			m_collector.removeRef(m_refid);
 			m_refid = null;
 		}
 	}
@@ -111,7 +111,7 @@ public class ResHolder<T, H extends ResHolder<T, H>> implements Holder<T, H> {
 	public void destroy() {
 		if (null != m_collector) {
 			if (null != m_refid) {
-				m_collector.unregister(m_refid);
+				m_collector.removeRef(m_refid);
 				m_refid = null;
 			}
 			if (hasResource()) {

@@ -105,10 +105,10 @@ public class ResCollector<HOLDER extends Holder<MRES, HOLDER>, MRES> implements
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.flowcomputing.commons.resgc.Collector#unregister()
+	 * org.flowcomputing.commons.resgc.Collector#removeRef()
 	 */
 	@Override
-	public void unregister(Reference<HOLDER> ref) {
+	public void removeRef(Reference<HOLDER> ref) {
 		refmap.remove(ref);
 	}
 

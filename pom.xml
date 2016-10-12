@@ -4,8 +4,9 @@
 	<artifactId>commons-resgc</artifactId>
 	<version>0.8.12-SNAPSHOT</version>
 
-	<name>Flowcomputing Resource Collector</name>
+	<name>${project.groupId}:${project.artifactId}</name>
 	<description>Collect resources</description>
+	<url>https://github.com/wewela/commons-resgc</url>
 
 	<developers>
 		<developer>

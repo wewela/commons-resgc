@@ -31,7 +31,26 @@ public interface Collector<HOLDER extends Holder<MRES, HOLDER>, MRES> {
 	 */
 	public void unregister(HOLDER holder);
 	
-	
+	/**
+	 * Determine if a managed resource is registered.
+	 *
+	 * @param holder
+	 *            a holder to determine
+	 *
+	 * @return true of registered
+	 */
+	public boolean isRegistered(HOLDER holder);
+
+	/**
+	 * Determine if a ref is contained.
+	 *
+	 * @param ref
+	 *            a ref object to be determined
+	 *
+	 * @return true of contained
+	 */
+	public boolean containsRef(Reference<HOLDER> ref);
+
 	/**
 	 * Remove a Ref that cannot be used alone.
 	 * 

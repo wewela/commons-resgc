@@ -67,6 +67,13 @@ public interface Holder<T, H extends Holder<T, H>> {
 	public Reference<H> getRefId();
 
 	/**
+	 * determine if this holder is enabled to be auto reclaimed.
+	 *
+	 * @return true if autoclaim is enabled
+	 */
+	public boolean autoReclaim();
+
+	/**
 	 * prevent resource from being reclaimed.
 	 * 
 	 */

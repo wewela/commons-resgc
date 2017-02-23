@@ -92,7 +92,15 @@ public class ResHolder<T, H extends ResHolder<T, H>> implements Holder<T, H> {
 	public Reference<H> getRefId() {
 		return m_refid;
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see org.flowcomputing.commons.resgc.Holder#autoReclaim()
+	 */
+	@Override
+	public boolean autoReclaim() {
+		return null != m_collector ? m_collector.containsRef(m_refid) : false;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.flowcomputing.commons.resgc.Holder#cancelReclaim()
 	 */

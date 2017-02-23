@@ -100,7 +100,30 @@ public class ResCollector<HOLDER extends Holder<MRES, HOLDER>, MRES> implements
 			holder.setCollector(null);
 		}
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * org.flowcomputing.commons.resgc.Collector#isRegistered(org.flowcomputing.
+	 * commons.resgc.Holder)
+	 */
+	@Override
+	public boolean isRegistered(HOLDER holder) {
+		return null != holder.getRefId() ? refmap.containsKey(holder.getRefId()) : false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * org.flowcomputing.commons.resgc.Collector#containsRef()
+	 */
+	@Override
+	public boolean containsRef(Reference<HOLDER> ref) {
+		return refmap.containsKey(ref);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 

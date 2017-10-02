@@ -21,184 +21,189 @@ import java.util.concurrent.atomic.AtomicLong;
  * @param <MRES>
  *            resource type to be holden.
  */
-public class ResCollector<HOLDER extends Holder<MRES, HOLDER>, MRES> implements
-		Collector<HOLDER, MRES> {
+public class ResCollector<HOLDER extends Holder<MRES, HOLDER>, MRES>
+        implements Collector<HOLDER, MRES> {
 
-	public final static long WAITRECLAIMTIMEOUT = 800;
-	public final static long WAITQUEUETIMEOUT = 300;
-        public final static long WAITTERMTIMEOUT = 10000;
-	public final static long TERMCHECKTIMEOUT = 20;
+    public final static long WAITRECLAIMTIMEOUT = 800;
+    public final static long WAITQUEUETIMEOUT = 300;
+    public final static long WAITTERMTIMEOUT = 10000;
+    public final static long TERMCHECKTIMEOUT = 20;
 
-	private final ReferenceQueue<HOLDER> refque = new ReferenceQueue<HOLDER>();
-	private final Map<Reference<HOLDER>, MRES> refmap = 
-			new ConcurrentHashMap<Reference<HOLDER>, MRES>();
+    private final ReferenceQueue<HOLDER> refque = new ReferenceQueue<HOLDER>();
+    private final Map<Reference<HOLDER>, ReclaimContext<MRES>> refmap =
+            new ConcurrentHashMap<Reference<HOLDER>, ReclaimContext<MRES>>();
 
-	private ResReclaim<MRES> m_reclaimer;
-	private Thread m_collector;
-	private AtomicLong descnt = new AtomicLong(0L);
-	
-	private volatile boolean m_stopped = false;
+    private ResReclaim<MRES> m_reclaimer;
+    private Thread m_collector;
+    private AtomicLong descnt = new AtomicLong(0L);
 
-	/**
-	 * constructor to accept a resource reclaimer that is used to actual its
-	 * resource when needed.
-	 * 
-	 * @param reclaimer 
-	 *          a reclaimer object for managed resource reclaim.
-	 */
-	public ResCollector(ResReclaim<MRES> reclaimer) {
-		m_reclaimer = reclaimer;
-		m_collector = new Thread() {
-			public void run() {
-				while (!m_stopped) {
-					try {
-						Reference<? extends HOLDER> ref = refque.remove(WAITQUEUETIMEOUT);
-                                                if (null != ref) {
-							destroyRes(ref);
-							descnt.getAndIncrement();
-						}
-					} catch (InterruptedException ex) {
-						break;
-					}
-				}
-			}
-		};
-		m_collector.setDaemon(true);
-		m_collector.start();
-	}
+    private volatile boolean m_stopped = false;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.flowcomputing.commons.resgc.Collector#register(org.flowcomputing.
-	 * commons.resgc.Holder, java.lang.Object)
-	 */
-	@Override
-	public void register(HOLDER holder) {
-		if (null == holder.getRefId()) {
-			PhantomReference<HOLDER> pref = new PhantomReference<HOLDER>(holder,
-					refque);
-			refmap.put(pref, holder.get());
-			holder.setCollector(this);
-			holder.setRefId(pref);
-		}
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.flowcomputing.commons.resgc.Collector#unregister(org.flowcomputing.
-	 * commons.resgc.Holder)
-	 */
-	@Override
-	public void unregister(HOLDER holder) {
-		if (null != holder.getRefId()) {
-			refmap.remove(holder.getRefId());
-			holder.setRefId(null);
-			holder.setCollector(null);
-		}
-	}
+    /**
+     * constructor to accept a resource reclaimer that is used to actual its
+     * resource when needed.
+     *
+     * @param reclaimer
+     *          a reclaimer object for managed resource reclaim.
+     */
+    public ResCollector(ResReclaim<MRES> reclaimer) {
+        m_reclaimer = reclaimer;
+        m_collector = new Thread() {
+            public void run() {
+                while (!m_stopped) {
+                    try {
+                        Reference<? extends HOLDER> ref = refque.remove(WAITQUEUETIMEOUT);
+                        if (null != ref) {
+                            destroyRes(ref);
+                            descnt.getAndIncrement();
+                        }
+                    } catch (InterruptedException ex) {
+                        break;
+                    }
+                }
+            }
+        };
+        m_collector.setDaemon(true);
+        m_collector.start();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * org.flowcomputing.commons.resgc.Collector#isRegistered(org.flowcomputing.
-	 * commons.resgc.Holder)
-	 */
-	@Override
-	public boolean isRegistered(HOLDER holder) {
-		return null != holder.getRefId() ? refmap.containsKey(holder.getRefId()) : false;
-	}
+    @Override
+    public void register(HOLDER holder) {
+        register(holder, null);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * org.flowcomputing.commons.resgc.Collector#containsRef()
-	 */
-	@Override
-	public boolean containsRef(Reference<HOLDER> ref) {
-		return refmap.containsKey(ref);
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.flowcomputing.commons.resgc.Collector#register(org.flowcomputing.
+     * commons.resgc.Holder, java.lang.Object)
+     */
+    @Override
+    public void register(HOLDER holder, ReclaimContext<MRES> rctx) {
+        if (null == holder.getRefId()) {
+            PhantomReference<HOLDER> pref = new PhantomReference<HOLDER>(holder,
+                    refque);
+            refmap.put(pref, null == rctx ? new ResReclaimContext<MRES>(holder.get()) : rctx);
+            holder.setCollector(this);
+            holder.setRefId(pref);
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.flowcomputing.commons.resgc.Collector#removeRef()
-	 */
-	@Override
-	public void removeRef(Reference<HOLDER> ref) {
-		refmap.remove(ref);
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.flowcomputing.commons.resgc.Collector#unregister(org.flowcomputing.
+     * commons.resgc.Holder)
+     */
+    @Override
+    public void unregister(HOLDER holder) {
+        if (null != holder.getRefId()) {
+            refmap.remove(holder.getRefId());
+            holder.setRefId(null);
+            holder.setCollector(null);
+        }
+    }
 
-	/**
-	 * destroy a specified holden resource.
-	 * 
-	 * @param ref
-	 *            a specified reference that is referring a holder
-	 */
-	@Override
-	public void destroyRes(Reference<? extends HOLDER> ref) {
-		MRES mres = refmap.remove(ref);
-		m_reclaimer.reclaim(mres);
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.flowcomputing.commons.resgc.Collector#isRegistered(org.flowcomputing.
+     * commons.resgc.Holder)
+     */
+    @Override
+    public boolean isRegistered(HOLDER holder) {
+        return null != holder.getRefId() ? refmap.containsKey(holder.getRefId()) : false;
+    }
 
-	@Override
-	public void destroyRes(MRES mres) {
-		m_reclaimer.reclaim(mres);
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.flowcomputing.commons.resgc.Collector#containsRef()
+     */
+    @Override
+    public boolean containsRef(Reference<HOLDER> ref) {
+        return refmap.containsKey(ref);
+    }
 
-	private void forceGC(long timeout) {
-		System.gc();
-		try {
-			Thread.sleep(timeout);
-		} catch (Exception ex) {
-		}
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.flowcomputing.commons.resgc.Collector#removeRef()
+     */
+    @Override
+    public void removeRef(Reference<HOLDER> ref) {
+        refmap.remove(ref);
+    }
 
-	/**
-	 * wait for reclaim termination.
-	 *
-	 * @param timeout
-	 *            specify a timeout to reclaim
-	 */
-	public void waitReclaimCoolDown(long timeout) {
-		do {
-			forceGC(timeout);
-		} while (0L != descnt.getAndSet(0L));
-	}
+    /**
+     * destroy a specified holden resource.
+     *
+     * @param ref
+     *            a specified reference that is referring a holder
+     */
+    @Override
+    public void destroyRes(Reference<? extends HOLDER> ref) {
+        ReclaimContext<MRES> rctx = refmap.remove(ref);
+        m_reclaimer.reclaim(rctx);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.flowcomputing.commons.resgc.Collector#close()
-	 */
-	@Override
-	public boolean close(long recltmout, long termtmout) {
-		boolean ret = true;
-		waitReclaimCoolDown(recltmout);
-		m_stopped = true;
-		long et = System.currentTimeMillis() + termtmout;
-		while (m_collector.getState() != Thread.State.TERMINATED) {
-			try {
-				Thread.sleep(TERMCHECKTIMEOUT);
-			} catch (Exception ex) {
-			}
-			if (System.currentTimeMillis() > et) {
-				ret = false;
-				break;
-			}
-		}
-		refmap.clear();
-		return ret;
-	}
+    @Override
+    public void destroyRes(ReclaimContext<MRES> rctx) {
+        m_reclaimer.reclaim(rctx);
+    }
 
-	public boolean close() {
-		return close(WAITRECLAIMTIMEOUT, WAITTERMTIMEOUT);
-	}
+    private void forceGC(long timeout) {
+        System.gc();
+        try {
+            Thread.sleep(timeout);
+        } catch (Exception ex) {
+        }
+    }
+
+    /**
+     * wait for reclaim termination.
+     *
+     * @param timeout
+     *            specify a timeout to reclaim
+     */
+    public void waitReclaimCoolDown(long timeout) {
+        do {
+            forceGC(timeout);
+        } while (0L != descnt.getAndSet(0L));
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.flowcomputing.commons.resgc.Collector#close()
+     */
+    @Override
+    public boolean close(long recltmout, long termtmout) {
+        boolean ret = true;
+        waitReclaimCoolDown(recltmout);
+        m_stopped = true;
+        long et = System.currentTimeMillis() + termtmout;
+        while (m_collector.getState() != Thread.State.TERMINATED) {
+            try {
+                Thread.sleep(TERMCHECKTIMEOUT);
+            } catch (Exception ex) {
+            }
+            if (System.currentTimeMillis() > et) {
+                ret = false;
+                break;
+            }
+        }
+        refmap.clear();
+        return ret;
+    }
+
+    public boolean close() {
+        return close(WAITRECLAIMTIMEOUT, WAITTERMTIMEOUT);
+    }
 }

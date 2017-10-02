@@ -5,3 +5,5 @@ test-output/
 .settings/
 release.properties
 pom.xml.releaseBackup
+.idea/
+*.iml

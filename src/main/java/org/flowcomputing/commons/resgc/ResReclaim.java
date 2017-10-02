@@ -10,11 +10,11 @@ package org.flowcomputing.commons.resgc;
  */
 public interface ResReclaim<MRES> {
 
-	/**
-	 * reclaim a specified resource.
-	 * 
-	 * @param mres
-	 *            a resource to be ready for release
-	 */
-	public void reclaim(MRES mres);
+    /**
+     * reclaim a specified resource.
+     *
+     * @param rctx
+     *            a resource context to be used for release
+     */
+    public void reclaim(ReclaimContext<MRES> rctx);
 }

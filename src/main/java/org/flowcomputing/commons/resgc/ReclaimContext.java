@@ -6,10 +6,13 @@ package org.flowcomputing.commons.resgc;
  * @param <MRES>
  *            resource type to be holden.
  */
-public interface ReclaimContext<MRES> {
+public interface ReclaimContext<MRES> extends Cloneable {
 
     MRES getRes();
 
     void setRes(MRES res);
 
+    ReclaimContext<MRES> clone();
+
 }
+

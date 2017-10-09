@@ -47,10 +47,12 @@ public class ResCollectorTest {
                 rr);
 
         DoubleHolder m_holder = null;
+        ResReclaimContext<Double> rrctx= new ResReclaimContext<Double>(null);
         for (int i = 0; i < 500; ++i) {
             Double val = new Double(random.nextDouble() * 2000);
             DoubleHolder holder = new DoubleHolder(val);
-            rc.register(holder);
+            // rc.register(holder); /* with default reclaim context */
+            rc.register(holder, rrctx); /* with shared reclaim context */
             if (2 == i) {
                 rc.unregister(holder);
             }

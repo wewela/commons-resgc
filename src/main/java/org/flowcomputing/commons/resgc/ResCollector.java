@@ -81,10 +81,19 @@ public class ResCollector<HOLDER extends Holder<MRES, HOLDER>, MRES>
      */
     @Override
     public void register(HOLDER holder, ReclaimContext<MRES> rctx) {
+        ReclaimContext<MRES> e_rctx = rctx;
+        if (null == rctx) {
+            e_rctx = new ResReclaimContext<MRES>(holder.get());
+        } else {
+            if (null == rctx.getRes()) {
+                e_rctx = rctx.clone();
+                e_rctx.setRes(holder.get());
+            }
+        }
         if (null == holder.getRefId()) {
             PhantomReference<HOLDER> pref = new PhantomReference<HOLDER>(holder,
                     refque);
-            refmap.put(pref, null == rctx ? new ResReclaimContext<MRES>(holder.get()) : rctx);
+            refmap.put(pref, e_rctx);
             holder.setCollector(this);
             holder.setRefId(pref);
         }

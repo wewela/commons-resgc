@@ -17,4 +17,16 @@ public class ResReclaimContext<MRES> implements ReclaimContext<MRES> {
     public void setRes(MRES res) {
         m_res = res;
     }
+
+    @Override
+    public ResReclaimContext<MRES> clone() {
+        return new ResReclaimContext<MRES>(m_res);
+//        try {
+//            return (ResReclaimContext<MRES>) super.clone();
+//        } catch (CloneNotSupportedException e) {
+//            throw new RuntimeException("Clone is not allowed.");
+//        }
+    }
+
 }
+

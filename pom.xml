@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.flowcomputing.commons</groupId>
 	<artifactId>commons-resgc</artifactId>
-	<version>0.8.16-SNAPSHOT</version>
+	<version>0.8.16</version>
 
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>Collect resources</description>
@@ -44,7 +44,7 @@
 		<connection>scm:git:https://wewela@github.com/wewela/commons-resgc.git</connection>
 		<developerConnection>scm:git:https://wewela@github.com/wewela/commons-resgc.git</developerConnection>
 		<url>https://github.com/wewela/commons-resgc</url>
-		<tag>HEAD</tag>
+		<tag>commons-resgc-0.8.16</tag>
 	</scm>
 
 	<dependencies>

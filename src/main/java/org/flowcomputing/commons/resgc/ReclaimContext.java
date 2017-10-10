@@ -14,5 +14,7 @@ public interface ReclaimContext<MRES> extends Cloneable {
 
     ReclaimContext<MRES> clone();
 
+    ReclaimContext copyTo(ReclaimContext rctx);
+
 }
 

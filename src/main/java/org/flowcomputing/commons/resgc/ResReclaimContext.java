@@ -4,6 +4,10 @@ public class ResReclaimContext<MRES> implements ReclaimContext<MRES> {
 
     protected MRES m_res = null;
 
+    public ResReclaimContext() {
+        m_res = null;
+    }
+
     public ResReclaimContext(MRES res) {
         setRes(res);
     }
@@ -28,5 +32,9 @@ public class ResReclaimContext<MRES> implements ReclaimContext<MRES> {
 //        }
     }
 
+    @Override
+    public ReclaimContext copyTo(ReclaimContext rctx) {
+        return rctx;
+    }
 }
 

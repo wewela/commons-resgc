@@ -1,40 +1,29 @@
 package org.flowcomputing.commons.resgc;
 
-public class ResReclaimContext<MRES> implements ReclaimContext<MRES> {
+public class ResReclaimContext implements ReclaimContext {
 
-    protected MRES m_res = null;
+    protected int m_modeid;
 
     public ResReclaimContext() {
-        m_res = null;
+        m_modeid = 0;
     }
 
-    public ResReclaimContext(MRES res) {
-        setRes(res);
-    }
-
-    @Override
-    public MRES getRes() {
-        return m_res;
+    public ResReclaimContext(int modeid) {
+        m_modeid = modeid;
     }
 
     @Override
-    public void setRes(MRES res) {
-        m_res = res;
+    public ResReclaimContext clone() {
+        return new ResReclaimContext(m_modeid);
     }
 
-    @Override
-    public ResReclaimContext<MRES> clone() {
-        return new ResReclaimContext<MRES>(m_res);
-//        try {
-//            return (ResReclaimContext<MRES>) super.clone();
-//        } catch (CloneNotSupportedException e) {
-//            throw new RuntimeException("Clone is not allowed.");
-//        }
+    public int getModeId() {
+        return m_modeid;
     }
 
-    @Override
-    public ReclaimContext copyTo(ReclaimContext rctx) {
-        return rctx;
+    public void setModeId(int modeid) {
+        this.m_modeid = modeid;
     }
+
 }
 

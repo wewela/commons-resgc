@@ -30,8 +30,8 @@ public class ResCollector<HOLDER extends Holder<MRES, HOLDER>, MRES>
     public final static long TERMCHECKTIMEOUT = 20;
 
     private final ReferenceQueue<HOLDER> refque = new ReferenceQueue<HOLDER>();
-    private final Map<Reference<HOLDER>, ReclaimContext<MRES>> refmap =
-            new ConcurrentHashMap<Reference<HOLDER>, ReclaimContext<MRES>>();
+    private final Map<Reference<HOLDER>, ContextWrapper<MRES>> refmap =
+            new ConcurrentHashMap<Reference<HOLDER>, ContextWrapper<MRES>>();
 
     private ResReclaim<MRES> m_reclaimer;
     private Thread m_collector;
@@ -80,20 +80,12 @@ public class ResCollector<HOLDER extends Holder<MRES, HOLDER>, MRES>
      * commons.resgc.Holder, java.lang.Object)
      */
     @Override
-    public void register(HOLDER holder, ReclaimContext<MRES> rctx) {
-        ReclaimContext<MRES> e_rctx = rctx;
-        if (null == rctx) {
-            e_rctx = new ResReclaimContext<MRES>(holder.get());
-        } else {
-            if (null == rctx.getRes()) {
-                e_rctx = rctx.clone();
-                e_rctx.setRes(holder.get());
-            }
-        }
+    public void register(HOLDER holder, ReclaimContext rctx) {
+        ContextWrapper<MRES> cw = new ResContextWrapper<MRES>(holder.get(), rctx);
         if (null == holder.getRefId()) {
             PhantomReference<HOLDER> pref = new PhantomReference<HOLDER>(holder,
                     refque);
-            refmap.put(pref, e_rctx);
+            refmap.put(pref, cw);
             holder.setCollector(this);
             holder.setRefId(pref);
         }
@@ -157,13 +149,13 @@ public class ResCollector<HOLDER extends Holder<MRES, HOLDER>, MRES>
      */
     @Override
     public void destroyRes(Reference<? extends HOLDER> ref) {
-        ReclaimContext<MRES> rctx = refmap.remove(ref);
-        m_reclaimer.reclaim(rctx);
+        ContextWrapper<MRES> cw = refmap.remove(ref);
+        m_reclaimer.reclaim(cw);
     }
 
     @Override
-    public void destroyRes(ReclaimContext<MRES> rctx) {
-        m_reclaimer.reclaim(rctx);
+    public void destroyRes(ContextWrapper<MRES> cw) {
+        m_reclaimer.reclaim(cw);
     }
 
     private void forceGC(long timeout) {

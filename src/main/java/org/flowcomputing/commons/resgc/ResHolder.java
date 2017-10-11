@@ -122,15 +122,15 @@ public class ResHolder<T, H extends ResHolder<T, H>>
      * @see org.flowcomputing.commons.resgc.Holder#destroy()
      */
     @Override
-    public void destroy(ReclaimContext<T> rctx) {
+    public void destroy(ContextWrapper<T> cw) {
         if (null != m_collector) {
             if (null != m_refid) {
                 m_collector.removeRef(m_refid);
                 m_refid = null;
             }
             if (hasResource()) {
-                m_collector.destroyRes(null == rctx ?
-                        new ResReclaimContext<T>(m_mres) : rctx);
+                m_collector.destroyRes(null == cw ?
+                        new ResContextWrapper<T>(m_mres, null) : cw);
                 m_hasres = false;
             }
         }

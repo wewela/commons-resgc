@@ -32,7 +32,7 @@ public interface Collector<HOLDER extends Holder<MRES, HOLDER>,MRES> {
      * @param rctx
      *            a reclaim context
      */
-    public void register(HOLDER holder, ReclaimContext<MRES> rctx);
+    public void register(HOLDER holder, ReclaimContext rctx);
 
     /**
      * Unregister a managed resource.
@@ -81,10 +81,10 @@ public interface Collector<HOLDER extends Holder<MRES, HOLDER>,MRES> {
     /**
      * destroy the resource
      *
-     * @param rctx
-     *          a context to be used to destroy contained resource
+     * @param cw
+     *          a context wrapper to be used to destroy contained resource
      */
-    public void destroyRes(ReclaimContext<MRES> rctx);
+    public void destroyRes(ContextWrapper<MRES> cw);
 
     /**
      * close this collector.

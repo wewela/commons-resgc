@@ -13,8 +13,8 @@ public interface ResReclaim<MRES> {
     /**
      * reclaim a specified resource.
      *
-     * @param rctx
-     *            a resource context to be used for release
+     * @param cw
+     *            a resource context wrapper to be used for resource release
      */
-    public void reclaim(ReclaimContext<MRES> rctx);
+    public void reclaim(ContextWrapper<MRES> cw);
 }

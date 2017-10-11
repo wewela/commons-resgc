@@ -85,5 +85,5 @@ public interface Holder<T, H extends Holder<T, H>> {
      */
     public void destroy();
 
-    public void destroy(ReclaimContext<T> rctx);
+    public void destroy(ContextWrapper<T> cw);
 }

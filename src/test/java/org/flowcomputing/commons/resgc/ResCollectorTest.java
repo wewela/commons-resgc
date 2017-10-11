@@ -38,12 +38,12 @@ public class ResCollectorTest {
 
         ResReclaim<Double> rr = new ResReclaim<Double>() {
             @Override
-            public void reclaim(ReclaimContext<Double> rctx) {
+            public void reclaim(ContextWrapper<Double> cw) {
                 System.out.println(String.format("%f has been reclaimed...",
-                        rctx.getRes()));
+                        cw.getRes()));
                 count--;
                 for (Double val : m_vals) {
-                  AssertJUnit.assertFalse(0 == val.compareTo(rctx.getRes()));
+                  AssertJUnit.assertFalse(0 == val.compareTo(cw.getRes()));
                 }
             }
         };
@@ -51,13 +51,12 @@ public class ResCollectorTest {
         ResCollector<DoubleHolder, Double> rc = new ResCollector<DoubleHolder, Double>(
                 rr);
 
-        ResReclaimContext<Boolean> bool_rrctx= new ResReclaimContext<Boolean>();
-        ResReclaimContext<Double> rrctx= new ResReclaimContext<Double>();
+        ResReclaimContext rrctx= new ResReclaimContext(1);
         for (int i = 0; i < 500; ++i) {
             Double val = new Double(random.nextDouble() * 2000);
             DoubleHolder holder = new DoubleHolder(val);
             // rc.register(holder); /* with default reclaim context */
-            rc.register(holder, bool_rrctx.copyTo(rrctx)); /* with shared reclaim context */
+            rc.register(holder, rrctx); /* with a reclaim context */
             if (2 == i) {
                 rc.unregister(holder);
                 m_vals[0] = holder.get();
@@ -98,9 +97,9 @@ public class ResCollectorTest {
 
         ResReclaim<Double> rr = new ResReclaim<Double>() {
             @Override
-            public void reclaim(ReclaimContext<Double> rctx) {
+            public void reclaim(ContextWrapper<Double> cw) {
                 System.out.println(String.format("%f has been reclaimed...",
-                        rctx.getRes()));
+                        cw.getRes()));
                 count--;
             }
         };
